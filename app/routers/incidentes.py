@@ -10,3 +10,7 @@ def crear_incidente(datos: IncidenteCrear):
     incidente = Incidente(id=nuevo_id, **datos.model_dump()) #convierte la información en un diccionario
     incidentes_db[nuevo_id] = incidente
     return incidente
+
+@router.get("", response_model=list[Incidente])
+def obtener_incidentes():
+    return list(incidentes_db.values())
