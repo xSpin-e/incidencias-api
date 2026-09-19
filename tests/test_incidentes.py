@@ -49,3 +49,28 @@ def test_obtener_incidente_inexistente():
     respuesta_get = client.get(f"/incidentes/100")
     assert respuesta_get.status_code == 404
     assert respuesta_get.json() == {"detail": "Incidente no encontrado"}
+
+def test_listar_incidentes():
+
+    datos = {
+        "titulo": "Phising",
+        "descripcion": "Correo sospechoso",
+        "severidad": "media"
+    }
+
+    client.post("/incidentes", json=datos)
+
+    datos2 = {
+        "titulo": "Fuerza bruta",
+        "descripcion": "500 intentos de login",
+        "severidad": "alta"
+    }
+    
+    client.post("/incidentes", json=datos2)
+
+    respuesta_get = client.get("/incidentes")
+
+    assert respuesta_get.status_code == 200
+    cuerpo = respuesta_get.json()
+    assert len(cuerpo) == 2
+
