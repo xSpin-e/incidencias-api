@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+import os
 
+from app.enum import Rol
 from app.models import UsuarioDB
 from app.repositories import usuario_repository
 from app.schemas import Usuario, UsuarioCrear
@@ -29,3 +31,17 @@ def autenticar_usuario(db: Session, email: str, password: str) -> Usuario:
     if usuario is None or not verificar_password(password, usuario.password_hash):
         raise CredencialesInvalidas()
     return Usuario.model_validate(usuario)
+
+def crear_admin_inicial(db: Session) -> None:
+    email = os.getenv("ADMIN_EMAIL")
+    password = os.getenv("ADMIN_PASSWORD")
+    if not email or not password:
+        return
+    if usuario_repository.obtener_por_email(db, email) is not None:
+        return
+    admin = UsuarioDB(
+        email=email,
+        password_hash=hashear_password(password),
+        rol=Rol.admin,
+    )
+    usuario_repository.guardar(db, admin)
