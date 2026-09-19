@@ -7,3 +7,40 @@ def test_health():
     respuesta = client.get("/health")
     assert respuesta.status_code == 200
     assert respuesta.json() == {"status":"ok"}
+
+def test_crear_incidente():
+    datos = {
+        "titulo": "Phising",
+        "descripcion": "Correo sospechoso",
+        "severidad": "media"
+    }
+
+    respuesta = client.post("/incidentes", json=datos)
+
+    assert respuesta.status_code == 201
+    cuerpo = respuesta.json()
+    assert cuerpo["titulo"] == "Phising"
+    assert cuerpo["descripcion"] == "Correo sospechoso"
+    assert cuerpo["severidad"] == "media"
+    assert cuerpo["cve_id"] is None
+
+def test_obtener_incidente():
+    datos = {
+        "titulo": "Phising",
+        "descripcion": "Correo sospechoso",
+        "severidad": "media"
+    }
+
+    respuesta_post = client.post("/incidentes", json=datos)
+
+    assert respuesta_post.status_code == 201
+
+    respuesta_get = client.get(f"/incidentes/{respuesta_post.json()['id']}")
+
+    assert respuesta_get.status_code == 200
+    cuerpo = respuesta_get.json()
+    assert cuerpo["id"] == 1
+    assert cuerpo["titulo"] == "Phising"
+    assert cuerpo["descripcion"] == "Correo sospechoso"
+    assert cuerpo["severidad"] == "media"
+    assert cuerpo["cve_id"] is None
