@@ -18,6 +18,12 @@ def get_db():
     finally:
         db.close()           # 3. cerrar
 
+def init_db():
+    from app import models
+
+    Base.metadata.create_all(bind=engine)
+
+
 DbSession = Annotated[Session, Depends(get_db)]
 
 class Base(DeclarativeBase):
