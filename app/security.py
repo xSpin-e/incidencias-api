@@ -1,4 +1,24 @@
 import bcrypt
+import os
+from datetime import datetime, timedelta, timezone
+import jwt
+
+ALGORITMO = "HS256"
+MINUTOS_EXPIRACION = 30
+
+def _clave_secreta() -> str:
+    clave = os.getenv("SECRET_KEY")
+    if not clave:
+        raise RuntimeError("Falta la variable de entorno SECRET_KEY")
+    return clave
+
+def crear_token(email: str) -> str:
+    expira = datetime.now(timezone.utc) + timedelta(minutes=MINUTOS_EXPIRACION)
+    return jwt.encode(
+        {"sub": email, "exp": expira},
+        _clave_secreta(),
+        algorithm=ALGORITMO,
+    )
 
 def hashear_password(password: str) -> str:
     hash_bytes = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
