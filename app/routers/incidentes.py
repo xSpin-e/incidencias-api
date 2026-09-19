@@ -4,7 +4,6 @@ from app.services import incidente_service
 from app.database import DbSession
 
 router = APIRouter(prefix="/incidentes", tags=["incidentes"])
-incidentes_db: dict[int, Incidente] = {}
 
 @router.post("", response_model=Incidente, status_code=201)
 def crear_incidente(datos: IncidenteCrear, db: DbSession):
