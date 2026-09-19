@@ -65,7 +65,7 @@ def test_listar_incidentes():
         "descripcion": "500 intentos de login",
         "severidad": "alta"
     }
-    
+
     client.post("/incidentes", json=datos2)
 
     respuesta_get = client.get("/incidentes")
@@ -74,3 +74,12 @@ def test_listar_incidentes():
     cuerpo = respuesta_get.json()
     assert len(cuerpo) == 2
 
+def test_crear_incidente_severidad_invalida():
+    datos = {
+        "titulo": "Phishing",
+        "descripcion": "Correo sospechoso",
+        "severidad": "catastrofe",
+    }
+    respuesta = client.post("/incidentes", json=datos)
+
+    assert respuesta.status_code == 422
