@@ -1,6 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from app.enum import Estado
-from app.enum import Severidad
+from app.enum import Estado, Severidad, Rol
 
 
 # Lo que recibe la API
@@ -23,4 +22,5 @@ class UsuarioCrear(BaseModel):
 class Usuario(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
+    rol: Rol
     email: str
