@@ -78,3 +78,19 @@ def test_crear_incidente_severidad_invalida(client, token_usuario):
     respuesta = client.post("/incidentes", json=datos, headers=token_usuario)
 
     assert respuesta.status_code == 422
+
+def test_registro(client):
+    respuesta = client.post("/auth/registro", json={"email": "a@a.com", "password": "1234"})
+    assert respuesta.status_code == 201
+    cuerpo = respuesta.json()
+    assert cuerpo["email"] == "a@a.com"
+    assert cuerpo["rol"] == "usuario"
+    assert "password" not in cuerpo
+    assert "password_hash" not in cuerpo
+
+
+def test_registro_email_repetido(client):
+    datos = {"email": "a@a.com", "password": "1234"}
+    client.post("/auth/registro", json=datos)
+    respuesta = client.post("/auth/registro", json=datos)
+    assert respuesta.status_code == 409
