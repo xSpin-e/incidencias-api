@@ -1,6 +1,8 @@
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from typing import Annotated
+from fastapi import Depends
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./incidentes.db")
 
@@ -15,6 +17,8 @@ def get_db():
         yield db             # 2. prestar
     finally:
         db.close()           # 3. cerrar
+
+DbSession = Annotated[Session, Depends(get_db)]
 
 class Base(DeclarativeBase):
     pass
