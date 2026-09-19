@@ -44,3 +44,8 @@ def test_obtener_incidente():
     assert cuerpo["descripcion"] == "Correo sospechoso"
     assert cuerpo["severidad"] == "media"
     assert cuerpo["cve_id"] is None
+
+def test_obtener_incidente_inexistente():
+    respuesta_get = client.get(f"/incidentes/100")
+    assert respuesta_get.status_code == 404
+    assert respuesta_get.json() == {"detail": "Incidente no encontrado"}
