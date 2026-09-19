@@ -11,3 +11,7 @@ class Estado(StrEnum):
     abierto = "abierto"
     en_curso = "en_curso"
     cerrado = "cerrado"
+
+class Rol(StrEnum):
+    usuario = "usuario"
+    admin = "admin"

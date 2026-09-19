@@ -1,6 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from app.enum import Estado
-from app.enum import Severidad
+from app.enum import Estado, Severidad, Rol
 
 
 # Lo que recibe la API
@@ -15,3 +14,13 @@ class IncidenteCrear(BaseModel):
 class Incidente(IncidenteCrear):
     model_config = ConfigDict(from_attributes=True) #Convierte de INCIDENTE_DB A INCIDENTE_DTO
     id: int
+
+class UsuarioCrear(BaseModel):
+    email: str
+    password: str
+
+class Usuario(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    rol: Rol
+    email: str
