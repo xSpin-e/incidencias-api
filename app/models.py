@@ -11,3 +11,9 @@ class IncidenteDB(Base):
     severidad: Mapped[str]
     estado: Mapped[str] = mapped_column(default=Estado.abierto)
     cve_id: Mapped[str | None]
+
+class UsuarioDB(Base):
+    __tablename__ = "usuarios"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(unique=True)
+    password_hash: Mapped[str]
