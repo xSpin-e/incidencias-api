@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from app.enum import Estado
 from app.enum import Severidad
 
@@ -13,4 +13,5 @@ class IncidenteCrear(BaseModel):
 
 # Lo que devuelve la API
 class Incidente(IncidenteCrear):
+    model_config = ConfigDict(from_attributes=True) #Convierte de INCIDENTE_DB A INCIDENTE_DTO
     id: int
