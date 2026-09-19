@@ -1,16 +1,7 @@
-from enum import StrEnum
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from app.enum import Estado
+from app.enum import Severidad
 
-class Severidad(StrEnum):
-    baja = "baja"
-    media = "media"
-    alta = "alta"
-    critica = "critica"
-
-class Estado(StrEnum):
-    abierto = "abierto"
-    en_curso = "en_curso"
-    cerrado = "cerrado"
 
 # Lo que recibe la API
 class IncidenteCrear(BaseModel):
@@ -22,4 +13,5 @@ class IncidenteCrear(BaseModel):
 
 # Lo que devuelve la API
 class Incidente(IncidenteCrear):
+    model_config = ConfigDict(from_attributes=True) #Convierte de INCIDENTE_DB A INCIDENTE_DTO
     id: int

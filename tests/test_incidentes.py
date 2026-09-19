@@ -1,14 +1,9 @@
-from fastapi.testclient import TestClient
-from app.main import app
-
-client = TestClient(app)
-
-def test_health():
+def test_health(client):
     respuesta = client.get("/health")
     assert respuesta.status_code == 200
     assert respuesta.json() == {"status":"ok"}
 
-def test_crear_incidente():
+def test_crear_incidente(client):
     datos = {
         "titulo": "Phising",
         "descripcion": "Correo sospechoso",
@@ -24,7 +19,7 @@ def test_crear_incidente():
     assert cuerpo["severidad"] == "media"
     assert cuerpo["cve_id"] is None
 
-def test_obtener_incidente():
+def test_obtener_incidente(client):
     datos = {
         "titulo": "Phising",
         "descripcion": "Correo sospechoso",
@@ -45,12 +40,12 @@ def test_obtener_incidente():
     assert cuerpo["severidad"] == "media"
     assert cuerpo["cve_id"] is None
 
-def test_obtener_incidente_inexistente():
+def test_obtener_incidente_inexistente(client):
     respuesta_get = client.get(f"/incidentes/100")
     assert respuesta_get.status_code == 404
     assert respuesta_get.json() == {"detail": "Incidente no encontrado"}
 
-def test_listar_incidentes():
+def test_listar_incidentes(client):
 
     datos = {
         "titulo": "Phising",
@@ -74,7 +69,7 @@ def test_listar_incidentes():
     cuerpo = respuesta_get.json()
     assert len(cuerpo) == 2
 
-def test_crear_incidente_severidad_invalida():
+def test_crear_incidente_severidad_invalida(client):
     datos = {
         "titulo": "Phishing",
         "descripcion": "Correo sospechoso",

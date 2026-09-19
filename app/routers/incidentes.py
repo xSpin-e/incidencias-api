@@ -1,22 +1,21 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas import Incidente, IncidenteCrear
+from app.services import incidente_service
+from app.database import DbSession
 
 router = APIRouter(prefix="/incidentes", tags=["incidentes"])
-incidentes_db: dict[int, Incidente] = {}
 
 @router.post("", response_model=Incidente, status_code=201)
-def crear_incidente(datos: IncidenteCrear):
-    nuevo_id = len(incidentes_db) + 1
-    incidente = Incidente(id=nuevo_id, **datos.model_dump()) #convierte la información en un diccionario
-    incidentes_db[nuevo_id] = incidente
-    return incidente
+def crear_incidente(datos: IncidenteCrear, db: DbSession):
+    return incidente_service.crear_incidente(db, datos)
 
 @router.get("", response_model=list[Incidente])
-def obtener_incidentes():
-    return list(incidentes_db.values())
+def obtener_incidentes(db: DbSession):
+    return incidente_service.listar_incidentes(db)
 
 @router.get("/{incidente_id}", response_model=Incidente)
-def obtener_incidente(incidente_id: int):
-    if incidente_id not in incidentes_db:
+def obtener_incidente(db: DbSession, incidente_id: int):
+    incidente = incidente_service.obtener_por_id(db, incidente_id)
+    if incidente is None:
         raise HTTPException(status_code=404, detail="Incidente no encontrado")
-    return incidentes_db[incidente_id]
+    return incidente
