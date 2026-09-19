@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.models import UsuarioDB
 from app.repositories import usuario_repository
 from app.schemas import Usuario, UsuarioCrear
-from app.security import hashear_password
+from app.security import hashear_password, verificar_password
 
 
 class EmailYaRegistrado(Exception):
@@ -20,3 +20,12 @@ def registrar_usuario(db: Session, datos: UsuarioCrear) -> Usuario:
     )
     guardado = usuario_repository.guardar(db, fila)
     return Usuario.model_validate(guardado)
+
+class CredencialesInvalidas(Exception):
+    pass
+
+def autenticar_usuario(db: Session, email: str, password: str) -> Usuario:
+    usuario = usuario_repository.obtener_por_email(db, email)
+    if usuario is None or not verificar_password(password, usuario.password_hash):
+        raise CredencialesInvalidas()
+    return Usuario.model_validate(usuario)
