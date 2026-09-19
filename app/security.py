@@ -20,6 +20,15 @@ def crear_token(email: str) -> str:
         algorithm=ALGORITMO,
     )
 
+def leer_token(token: str) -> str | None:
+    try:
+        datos = jwt.decode(token, _clave_secreta(), algorithms=[ALGORITMO])
+    except jwt.InvalidTokenError:
+        return None
+    return datos.get("sub")
+
+
+
 def hashear_password(password: str) -> str:
     hash_bytes = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
     return hash_bytes.decode()
