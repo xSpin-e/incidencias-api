@@ -111,3 +111,25 @@ def test_login_password_incorrecta(client):
         "/auth/login", data={"username": "a@a.com", "password": "mala"}
     )
     assert respuesta.status_code == 401
+
+DATOS = {"titulo": "Phishing", "descripcion": "Correo sospechoso", "severidad": "media"}
+
+def test_crear_incidente_sin_token(client):
+    assert client.post("/incidentes", json=DATOS).status_code == 401
+
+
+def test_listar_sin_token(client):
+    assert client.get("/incidentes").status_code == 401
+
+
+def test_listar_como_usuario_prohibido(client, token_usuario):
+    assert client.get("/incidentes", headers=token_usuario).status_code == 403
+
+
+def test_obtener_como_usuario_prohibido(client, token_usuario):
+    assert client.get("/incidentes/1", headers=token_usuario).status_code == 403
+
+
+def test_token_falso(client):
+    respuesta = client.get("/incidentes", headers={"Authorization": "Bearer falso"})
+    assert respuesta.status_code == 401
