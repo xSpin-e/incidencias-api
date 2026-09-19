@@ -94,3 +94,20 @@ def test_registro_email_repetido(client):
     client.post("/auth/registro", json=datos)
     respuesta = client.post("/auth/registro", json=datos)
     assert respuesta.status_code == 409
+
+def test_login_correcto(client):
+    client.post("/auth/registro", json={"email": "a@a.com", "password": "1234"})
+    respuesta = client.post(
+        "/auth/login", data={"username": "a@a.com", "password": "1234"}
+    )
+    assert respuesta.status_code == 200
+    assert respuesta.json()["token_type"] == "bearer"
+    assert "access_token" in respuesta.json()
+
+
+def test_login_password_incorrecta(client):
+    client.post("/auth/registro", json={"email": "a@a.com", "password": "1234"})
+    respuesta = client.post(
+        "/auth/login", data={"username": "a@a.com", "password": "mala"}
+    )
+    assert respuesta.status_code == 401
