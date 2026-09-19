@@ -1,16 +1,7 @@
-from enum import StrEnum
 from pydantic import BaseModel
+from app.enum import Estado
+from app.enum import Severidad
 
-class Severidad(StrEnum):
-    baja = "baja"
-    media = "media"
-    alta = "alta"
-    critica = "critica"
-
-class Estado(StrEnum):
-    abierto = "abierto"
-    en_curso = "en_curso"
-    cerrado = "cerrado"
 
 # Lo que recibe la API
 class IncidenteCrear(BaseModel):
