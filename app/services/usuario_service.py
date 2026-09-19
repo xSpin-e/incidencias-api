@@ -32,6 +32,12 @@ def autenticar_usuario(db: Session, email: str, password: str) -> Usuario:
         raise CredencialesInvalidas()
     return Usuario.model_validate(usuario)
 
+def obtener_usuario_por_email(db: Session, email: str) -> Usuario | None:
+    fila = usuario_repository.obtener_por_email(db, email)
+    if fila is None:
+        return None
+    return Usuario.model_validate(fila)
+
 def crear_admin_inicial(db: Session) -> None:
     email = os.getenv("ADMIN_EMAIL")
     password = os.getenv("ADMIN_PASSWORD")
@@ -45,3 +51,4 @@ def crear_admin_inicial(db: Session) -> None:
         rol=Rol.admin,
     )
     usuario_repository.guardar(db, admin)
+
