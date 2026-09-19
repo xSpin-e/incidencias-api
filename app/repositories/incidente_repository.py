@@ -15,3 +15,6 @@ def listar(db: Session) -> list[IncidenteDB]:
     resultado = db.scalars(consulta)    # 2. se la hago a la base de datos
     filas = resultado.all()             # 3. recojo todas las respuestas
     return list(filas)      # 4. las devuelvo en una lista
+
+def obtener_por_id(db: Session, incidente_id: int) -> IncidenteDB | None:
+    return db.get(IncidenteDB, incidente_id)
