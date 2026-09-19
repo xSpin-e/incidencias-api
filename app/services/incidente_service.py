@@ -9,3 +9,7 @@ def crear_incidente(db: Session, datos: IncidenteCrear) -> Incidente:
     fila = IncidenteDB(**datos.model_dump())
     guardada = incidente_repository.guardar(db, fila)
     return Incidente.model_validate(guardada)
+
+def listar_incidentes(db: Session) -> list[Incidente]:
+    filas = incidente_repository.listar(db)
+    return [Incidente.model_validate(fila) for fila in filas]

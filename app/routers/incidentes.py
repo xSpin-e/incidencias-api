@@ -11,8 +11,8 @@ def crear_incidente(datos: IncidenteCrear, db: DbSession):
     return incidente_service.crear_incidente(db, datos)
 
 @router.get("", response_model=list[Incidente])
-def obtener_incidentes():
-    return list(incidentes_db.values())
+def obtener_incidentes(db: DbSession):
+    return incidente_service.listar_incidentes(db)
 
 @router.get("/{incidente_id}", response_model=Incidente)
 def obtener_incidente(incidente_id: int):
