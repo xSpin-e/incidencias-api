@@ -109,10 +109,3 @@ Cuando se fusiona un cambio en `main`, GitHub Actions ejecuta los tests, constru
 
 La demo en AWS es temporal y puede no estar disponible.
 
-## Lo que no está hecho
-
-- Las tablas se crean con `create_all`. En producción usaría migraciones (Alembic).
-- No hay refresh tokens: al caducar el token hay que volver a iniciar sesión.
-- La demo va por HTTP. Con un dominio lo pondría detrás de un proxy con HTTPS.
-- No tiene CORS configurado, así que un frontend web en otro origen no podría llamarla todavía.
-- Watchtower sirve para una demo, pero en un entorno real usaría etiquetas por versión y un orquestador.
