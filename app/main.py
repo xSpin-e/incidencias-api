@@ -18,7 +18,8 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://scorpion.adrianespin.com",
+        "https://adrianespin.com",
+        "https://www.adrianespin.com",
         "http://localhost:5173",
     ],
     allow_methods=["*"],
