@@ -48,6 +48,7 @@ curl -X POST http://localhost:8000/auth/registro \
 **2. Iniciar sesión.** Ojo: aquí no se manda JSON sino un formulario`:
 ```bashcurl -X POST http://localhost:8000/auth/login \  -d "username=yo@ejemplo.com&password=una-clave"```
 Devuelve `{"access_token": "...", "token_type": "bearer"}`. El token caduca a los 30 minutos.                                                                                       
+
 **3. Crear un incidente**, enviando el token en la cabecera:
 
 ```bash                                                                                                                                                                             curl -X POST http://localhost:8000/incidentes \  -H "Authorization: Bearer <token>" \
