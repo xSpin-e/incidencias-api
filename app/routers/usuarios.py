@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
-
+from app.dependencies import usuario_actual
 from app.database import DbSession
 from app.schemas import Usuario, UsuarioCrear
 from app.security import crear_token
@@ -49,3 +49,7 @@ def logout(response: Response):
         secure=True,
         samesite="strict",
     )
+
+@router.get("/me", response_model=Usuario)
+def me(usuario: Annotated[Usuario, Depends(usuario_actual)]):
+    return usuario
