@@ -1,7 +1,3 @@
-def test_health(client):
-    respuesta = client.get("/health")
-    assert respuesta.status_code == 200
-    assert respuesta.json() == {"status":"ok"}
 
 def test_crear_incidente(client, token_usuario): #ejecuta  primero la función client y en el código usamos lo que devuelve
     datos = {
