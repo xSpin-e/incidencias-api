@@ -13,6 +13,19 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
   watchtower:
     image: containrrr/watchtower
     restart: unless-stopped
@@ -26,3 +39,5 @@ services:
 
 volumes:
   datos:
+  caddy_data:
+  caddy_config:
