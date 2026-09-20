@@ -40,3 +40,12 @@ def login(
         max_age=30 * 60,
     )
     return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/logout", status_code=204)
+def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=True,
+        samesite="strict",
+    )
