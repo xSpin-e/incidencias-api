@@ -27,11 +27,11 @@ La API queda en `http://localhost:8000` y la documentación interactiva en `http
 
 | Variable | Para qué sirve |
 |---|---|
-| `SECRET_KEY` | Clave con la que se firman los tokens. Que sea larga y alea
+| `SECRET_KEY` | Clave con la que se firman los tokens. Que sea larga y aleatoria. |
 | `ADMIN_EMAIL` | Email del administrador que se crea al arrancar. |
 | `ADMIN_PASSWORD` | Contraseña de ese administrador. |
 
-Si falta alguna, el contenedor no arranca. El fichero `.env` no se sube al repositorio
+Si falta alguna, el contenedor no arranca. El fichero `.env` no se sube al repositorio.
 
 ## Cómo usarla
 
@@ -45,30 +45,74 @@ curl -X POST http://localhost:8000/auth/registro \
   -d '{"email": "yo@ejemplo.com", "password": "una-clave"}'
 ```
 
-**2. Iniciar sesión.** Ojo: aquí no se manda JSON sino un formulario`:
-```bashcurl -X POST http://localhost:8000/auth/login \  -d "username=yo@ejemplo.com&password=una-clave"```
-Devuelve `{"access_token": "...", "token_type": "bearer"}`. El token caduca a los 30 minutos.                                                                                       
+**2. Iniciar sesión.** Ojo: aquí no se manda JSON sino un formulario, y el email va en el campo `username`:
+
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -d "username=yo@ejemplo.com&password=una-clave"
+```
 
 **3. Crear un incidente**, enviando el token en la cabecera:
 
-```bash                                                                                                                                                                             curl -X POST http://localhost:8000/incidentes \  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \                                                                                                                                               -d '{"titulo": "Phishing", "descripcion": "Correo sospechoso", "severidad"```
-## Endpoints
-                                                                                                                                                                                    | Método | Ruta | Quién puede |
-|---|---|---|
-| GET | `/health` | Cualquiera |                                                                                                                                                    | POST | `/auth/registro` | Cualquiera |
-| POST | `/auth/login` | Cualquiera |                                                                                                                                               | POST | `/incidentes` | Usuario autenticado |
-| GET | `/incidentes` | Solo administrador |                                                                                                                                        | GET | `/incidentes/{id}` | Solo administrador |
-                                                                                                                                                                                    Campos de un incidente: `titulo`, `descripcion` y `severidad` son obligatoriierto`) y `cve_id` son opcionales.- `severidad`: `baja`, `media`, `alta` o `critica`- `estado`: `abierto`, `en_curso` o `cerrado`Errores habituales: `401` sin token o token caducado, `403` si el usuario nol incidente no existe, `409` si el email ya está registrado y `422` si losdatos no son válidos.                                                                                                                                                               
-## Tests                                                                                                                                                                            ```bashpip install -r requirements.txtpytest```
+```bash
+curl -X POST http://localhost:8000/incidentes \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"titulo": "Phishing", "descripcion": "Correo sospechoso", "severidad": "media"}'
+```
 
-Los tests usan una base de datos en memoria, así que no tocan los datos reales.                                                                                                     
+## Endpoints
+
+| Método | Ruta | Quién puede |
+|---|---|---|
+| GET | `/health` | Cualquiera |
+| POST | `/auth/registro` | Cualquiera |
+| POST | `/auth/login` | Cualquiera |
+| POST | `/incidentes` | Usuario autenticado |
+| GET | `/incidentes` | Solo administrador |
+| GET | `/incidentes/{id}` | Solo administrador |
+
+Campos de un incidente: `titulo`, `descripcion` y `severidad` son obligatorios. `estado` (por defecto `abierto`) y `cve_id` son opcionales.
+
+- `severidad`: `baja`, `media`, `alta` o `critica`
+- `estado`: `abierto`, `en_curso` o `cerrado`
+
+Errores habituales: `401` sin token o token caducado, `403` si el usuario no es administrador, `404` si el incidente no existe, `409` si el email ya está registrado y `422` si los datos no son válidos.
+
+## Tests
+
+```bash
+pip install -r requirements.txt
+pytest
+```
+
+Los tests usan una base de datos en memoria, así que no tocan los datos reales.
+
 ## Cómo está organizado
-                                                                                                                                                                                    El código sigue cuatro capas: router, servicio, repositorio y base de datos.ntic) están separados de las tablas (SQLAlchemy).
-                                                                                                                                                                                    ```
-app/                                                                                                                                                                                ├── routers/        endpoints HTTP
-├── services/       lógica                                                                                                                                                          ├── repositories/   consultas a la base de datos├── models.py       tablas├── schemas.py      datos que entran y salen├── security.py     hash de contraseñas y tokens└── dependencies.py comprobación de token y de rol
-```                                                                                                                                                                                 
-## Despliegue                                                                                                                                                                       Cuando se fusiona un cambio en `main`, GitHub Actions ejecuta los tests, conla sube a GitHub Container Registry. El servidor, una instancia EC2, tieneWatchtower, que revisa cada minuto si hay una imagen nueva y reinicia la API
+
+El código sigue cuatro capas: router, servicio, repositorio y base de datos. Los esquemas de la API (Pydantic) están separados de las tablas (SQLAlchemy).
+
+```
+app/
+├── routers/         endpoints HTTP
+├── services/        lógica
+├── repositories/    consultas a la base de datos
+├── models.py        tablas
+├── schemas.py       datos que entran y salen
+├── security.py      hash de contraseñas y tokens
+└── dependencies.py  comprobación de token y de rol
+```
+
+## Despliegue
+
+Cuando se fusiona un cambio en `main`, GitHub Actions ejecuta los tests, construye la imagen de Docker y la sube a GitHub Container Registry. El servidor, una instancia EC2, tiene Watchtower, que revisa cada minuto si hay una imagen nueva y reinicia la API con ella.
 
 La demo en AWS es temporal y puede no estar disponible.
+
+## Lo que no está hecho
+
+- Las tablas se crean con `create_all`. En producción usaría migraciones (Alembic).
+- No hay refresh tokens: al caducar el token hay que volver a iniciar sesión.
+- La demo va por HTTP. Con un dominio lo pondría detrás de un proxy con HTTPS.
+- No tiene CORS configurado, así que un frontend web en otro origen no podría llamarla todavía.
+- Watchtower sirve para una demo, pero en un entorno real usaría etiquetas por versión y un orquestador.
