@@ -22,6 +22,7 @@ app.add_middleware(
         "https://www.adrianespin.com",
         "http://localhost:5173",
     ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
