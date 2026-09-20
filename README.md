@@ -1,6 +1,6 @@
 # API de incidentes de seguridad
 
-API REST para registrar incidentes de seguridad. La hice para practicar Python y para tener un proyecto completo que enseñar: desde el código hasta el despliegue en AWS.
+API REST para registrar incidentes de seguridad.
 
 ![CI](https://github.com/xSpin-e/incidencias-api/actions/workflows/ci.yml/badge.svg)
 
@@ -51,8 +51,6 @@ curl -X POST http://localhost:8000/auth/registro \
 curl -X POST http://localhost:8000/auth/login \
   -d "username=yo@ejemplo.com&password=una-clave"
 ```
-
-Devuelve `{"access_token": "...", "token_type": "bearer"}`. El token caduca a los 30 minutos.
 
 **3. Crear un incidente**, enviando el token en la cabecera:
 
